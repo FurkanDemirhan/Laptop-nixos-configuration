@@ -9,6 +9,7 @@ let
   unstable = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") {
     config = { allowUnfree = true; };
   };
+  aagl = import (builtins.fetchTarball "https://github.com/ezKEa/aagl-gtk-on-nix/archive/main.tar.gz");
 in
 
  
@@ -16,6 +17,7 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      aagl.module
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -120,6 +122,7 @@ in
       xdg-desktop-portal-hyprland
     ];
   };
+  services.fwupd.enable = true;
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
@@ -128,8 +131,7 @@ in
   };
   
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
+  programs.sleepy-launcher.enable = true;
 
 
   environment.systemPackages = with pkgs; [
@@ -346,6 +348,19 @@ in
     unstable.spice
     unstable.libdrm
     unstable.rPackages.gbm
+    bbe
+    cage
+    protontricks
+    gawk
+    xdotool
+    xorg.xwininfo
+    unixtools.xxd
+    yad
+    fwupd
+    dmidecode
+    flashrom
+    meson
+    
  ];
 
 
