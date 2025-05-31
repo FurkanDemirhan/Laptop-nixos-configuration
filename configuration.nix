@@ -7,17 +7,17 @@
 
 let
   unstable = import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixos-unstable.tar.gz") {
-    config = { allowUnfree = true; };
+    config = { allowUnfree = true; allowBroken = true; };
   };
-  aagl = import (builtins.fetchTarball "https://github.com/ezKEa/aagl-gtk-on-nix/archive/main.tar.gz");
+  #aagl = import (builtins.fetchTarball "https://github.com/ezKEa/aagl-gtk-on-nix/archive/main.tar.gz");
 in
 
  
 {
   imports =
-    [ # Include the results of the hardware scan.
+    [ 
       ./hardware-configuration.nix
-      aagl.module
+      #aagl.module
     ];
 
   # Use the systemd-boot EFI boot loader.
@@ -30,7 +30,8 @@ in
   boot.loader.grub.efiSupport = true;
   boot.loader.efi.efiSysMountPoint = "/boot";
   boot.loader.grub.forceInstall = true;
-  boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_14;
+  boot.kernelPackages = pkgs.linuxKernel.packages.linux_6_15;
+  #boot.extraModulePackages = with pkgs.linuxKernel.packages.linux_6_15; [ v4l2loopback ];
   
   #boot.loader.systemd-boot.extraFiles {
   #  "efi/linux-zen/linux_zen.efi"
@@ -59,10 +60,10 @@ in
 
   # Enable the X11 windowing system.
   services.xserver.enable = true;
-  nixpkgs.config.permittedInsecurePackages = ["dotnet-sdk-6.0.428" "dotnet-runtime-6.0.36" "aspnetcore-runtime-6.0.36" "dotnet-sdk-7.0.120"];
+  nixpkgs.config.permittedInsecurePackages = ["dotnet-sdk-6.0.428" "dotnet-runtime-6.0.36" "aspnetcore-runtime-6.0.36" "dotnet-sdk-7.0.120" "ventoy-full" "ventoy-1.1.05" ];
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowBroken = true;
   nix.settings.experimental-features = ["nix-command" "flakes"];  
-
 
 
   # Configure keymap in X11
@@ -70,7 +71,7 @@ in
   # services.xserver.xkb.options = "eurosign:e,caps:escape";
 
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+  # services.printing.enable = true;
 
   # Enable sound.
   #hardware.pulseaudio.enable = true;
@@ -90,6 +91,7 @@ in
     isNormalUser = true;
     extraGroups = ["libvirtd" "wheel" "dialout" "disk" "video" "qemu" "kvm" "plugdev"]; # Enable ‘sudo’ for the user.
     password = "1234";
+    shell = pkgs.fish;
     packages = with pkgs; [
     ];
   };
@@ -114,6 +116,7 @@ in
   virtualisation.waydroid.enable = true;
   programs.hyprland.enable = true;
   programs.hyprland.xwayland.enable = true;
+  programs.fish.enable = true;
   services.desktopManager.plasma6.enable = false;
   xdg.portal = {
     enable = true;
@@ -131,8 +134,8 @@ in
   };
   
 
-  programs.sleepy-launcher.enable = true;
-
+  #programs.sleepy-launcher.enable = true;
+  #programs.the-honkers-railway-launcher.enable = true;
 
   environment.systemPackages = with pkgs; [
     nano
@@ -140,7 +143,6 @@ in
     tree
     wayland
     xdg-desktop-portal-hyprland
-    libsForQt5.qt5.qtwayland
     qt6.qtwayland
     qt6.qtbase
     unstable.waybar
@@ -150,86 +152,48 @@ in
     hyprshot
     wofi
     wl-clipboard
-    unstable.dunst
     sudo
-    gparted
     fish
     alacritty
-    unstable.jetbrains.rider
-    dotnet-sdk_9
-    dotnet-runtime_9
-    dotnet-aspnetcore_9
+    #unstable.jetbrains.rider
+    #dotnet-sdk_9
+    #dotnet-runtime_9
+    #dotnet-aspnetcore_9
     fontconfig
-    libGL
-    libGLU
-    xorg.libX11
-    xorg.libICE
-    xorg.libSM
-    skia
     gtk3
-    pango
-    cairo
-    harfbuzz
-    libglvnd
-    libsecret
-    libxkbcommon
-    godot_4
-    wine
-    wine64Packages.full
-    winePackages.full
-    winetricks
-    wine64
-    wineWowPackages.full
-    wine64Packages.stableFull
     wineWow64Packages.full
+    unstable.winetricks
     btop
     unstable.qemu
-    unstable.lutris
     steam
     protonup-qt
     steam-unwrapped
     unstable.llama-cpp
-    dotnetPackages.Nuget
+    #dotnetPackages.Nuget
     git
     steam-run
     android-tools
     brightnessctl
-    pcsx2
-    heimdall
-    heimdall-gui
+    #heimdall
+    #heimdall-gui
     lz4
     p7zip
     qbittorrent
     cmake
     unstable.heroic
     jdk
-    openutau
     cava
-    bottles
     aria
-    termusic
     fastfetch
-    unstable.yt-dlp
     vlc
     ffmpeg-full
     krita
-    gimp-with-plugins
-    uwufetch
-    lolcat
-    owofetch
-    cpufetch
-    xboxdrv
-    xemu
-    dolphin-emu
     hyprland-protocols
-    mono
-    ncdu
     unstable.blender
     python314Full
     python310Full
     libresprite
     kdePackages.kate
-    breeze-icons
     adwaita-icon-theme
     hyprpolkitagent
     udisks2
@@ -238,33 +202,18 @@ in
     unstable.vulkan-loader
     unstable.vulkan-tools
     unstable.vulkan-validation-layers
-    fontforge
     python3Packages.setuptools
     python3
-    nodejs
     flatpak
     librewolf
     unstable.zapzap
     cheese
     usbutils
-    teamviewer
-    tor
-    torctl
-    torsocks
     tor-browser
-    meek
     cdrtools
     ungoogled-chromium
-    sqlite
-    sqlite-web
     pavucontrol
     mangohud
-    inteltool
-    intel-ocl
-    pv
-    unstable.gpufetch
-    intel-gpu-tools
-    slurp
     grim
     xfce.thunar-volman
     mtpfs
@@ -274,10 +223,8 @@ in
     gamescope
     gnumake
     unstable.vesktop
-    adwaita-qt
     adwaita-qt6
     qt6ct
-    libsForQt5.qt5ct
     swww
     hyprpicker
     hyprutils
@@ -291,25 +238,18 @@ in
     exfatprogs
     xarchiver
     jre17_minimal
-    ghostty
     unstable.arduino-ide
     xorg.xkill
     filezilla
     unstable.lact
     minicom
     lzip
-    quickbms
     gthumb
     bc
     esptool
     espflash
-    fuse3
     appimage-run
-    filelight
     unrar
-    unstable.unarc
-    speedtest-cli
-    speedtest
     unstable.jetbrains.rust-rover
     unstable.jetbrains.clion
     rustup
@@ -319,64 +259,75 @@ in
     alsa-oss
     alsa-utils
     alsa-tools
-    xorg.libX11
-    waylandpp
-    xorg.libXcursor
-    xorg.libXi
-    libgcc
-    gcc
-    firejail
     unstable.telegram-desktop
     unstable.vscodium
     kdePackages.okular
     unzip
     unstable.teams-for-linux
-    unstable.anydesk
     helvum
     weston
-    gperftools
-    ncurses
-    glibc.dev
-    bison
-    perl
-    flex
     openssl
     rPackages.pkgconfig
     util-linux
     zlib
-    ncurses5
     unstable.spice
     unstable.libdrm
     unstable.rPackages.gbm
-    bbe
     cage
     protontricks
-    gawk
-    xdotool
-    xorg.xwininfo
-    unixtools.xxd
-    yad
-    fwupd
-    dmidecode
-    flashrom
     meson
-    
- ];
+    tio
+    putty
+    premake5
+    pkgsCross.mingw32.stdenv.cc
+    unstable.ghidra-bin
+    unstable.ghidra-extensions.wasm
+    unstable.ghidra-extensions.kaiju
+    unstable.ghidra-extensions.ret-sync
+    unstable.ghidra-extensions.findcrypt
+    unstable.ghidra-extensions.lightkeeper
+    unstable.ghidra-extensions.machinelearning
+    unstable.ghidra-extensions.gnudisassembler
+    unstable.ghidra-extensions.ghidra-delinker-extension
+    unstable.ghidra-extensions.ghidraninja-ghidra-scripts
+    unstable.lutris
+    clang
+    #ida-free
+    unstable.obs-studio
+    unstable.lmstudio
+    ventoy-full
+    unstable.mcpelauncher-client
+    unstable.mcpelauncher-ui-qt
+    wimlib
+    chntpw
+    ryubing
+    dmg2img
+    libarchive
+    syslinux
+    unstable.ironbar
+    swaynotificationcenter
+    unstable.anydesk
+    hyprlandPlugins.hyprbars
+    dwarfs
+    kdePackages.filelight
+    hyprpaper
+    gammastep
+    helix
+];
 
 
 
   fonts.packages = with pkgs; [
-    #nerdfonts
     minecraftia
-    #noto-fonts
-    #comic-mono
-    #fira-code
-    #fira-code-symbols
-    #noto-fonts-emoji
-    #noto-fonts-cjk-sans
-    #liberation_ttf
+    noto-fonts
+    comic-mono
+    fira-code
+    fira-code-symbols
+    noto-fonts-emoji
+    noto-fonts-cjk-sans
+    liberation_ttf
     #google-fonts
-  ];
+  ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
   environment.variables = {
     "OPENSSL_CONF" = "/etc/nixos/openssl.conf";
@@ -422,18 +373,9 @@ in
     ./MEB_SERTIFIKASI.crt
   ];
 
-
-  services.tor = {
-    enable = true;
-    settings = {
-      "UseBridges" = "1";
-      # Point to the meek_lite pluggable transport binary; adjust the path if needed.
-      "ClientTransportPlugin" = "meek_lite exec /run/current-system/sw/bin/meek-lite";
-      # Add your provided bridge configuration.
-      "Bridge" = "meek_lite 192.0.2.20:80 url=https://1314488750.rsc.cdn77.org front=www.phpmyadmin.net utls=HelloRandomizedALPN";
-    };
-  };
-
+  networking.extraHosts = ''
+    142.250.184.238 restrict.youtube.com
+  '';
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
