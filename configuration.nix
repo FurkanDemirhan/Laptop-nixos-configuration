@@ -133,9 +133,13 @@ in
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
   
-
+  
   #programs.sleepy-launcher.enable = true;
   #programs.the-honkers-railway-launcher.enable = true;
+  services.xserver.desktopManager.xfce.enable = true;
+  programs.alvr.enable = true;
+  programs.alvr.openFirewall = true;
+  hardware.steam-hardware.enable = true;
 
   environment.systemPackages = with pkgs; [
     nano
@@ -161,7 +165,7 @@ in
     #dotnet-aspnetcore_9
     fontconfig
     gtk3
-    wineWow64Packages.full
+    unstable.wineWow64Packages.full
     unstable.winetricks
     btop
     unstable.qemu
@@ -313,6 +317,22 @@ in
     hyprpaper
     gammastep
     helix
+    gparted
+    udiskie
+    unstable.sidequest
+    scrcpy
+    xorg.xcbutil
+    xorg.xcbutilcursor
+    xorg.xcbutilerrors
+    xorg.xcbutilwm
+    xorg.xcbutilkeysyms
+    xorg.xcbutilimage
+    xorg.xcbutilrenderutil
+    xorg.xprop
+    xorg.xdpyinfo
+    libva
+    libva-utils
+    intel-media-driver
 ];
 
 
@@ -333,18 +353,24 @@ in
     "OPENSSL_CONF" = "/etc/nixos/openssl.conf";
     GTK_THEME = "Adwaita:dark";
     QT_QPA_PLATFORMTHEME = "qt6ct";
+    #QT_QPA_PLATFORM = "steam-run xcb ~/.local/share/Steam/steamapps/common/SteamVR/bin/vrmonitor.sh %command%";    
   };
   environment.sessionVariables = {
     "OPENSSL_CONF" = "/etc/nixos/openssl.conf";
      GTK_THEME = "Adwaita:dark";
      QT_QPA_PLATFORMTHEME = "qt6ct";
+     #QT_QPA_PLATFORM = "steam-run xcb ~/.local/share/Steam/steamapps/common/SteamVR/bin/vrmonitor.sh %command%";
   };
 
   services.udev.extraRules = ''
     SUBSYSTEM=="usb", ATTR{idVendor}=="18d1", MODE="0666", GROUP="plugdev"
     # add more rules for your device if necessary
   '';
-
+  
+  #services.udev.packages = with pkgs; [
+  #  steam-devices-udev-rules
+  #
+  #];
 
   services.thermald.enable = true;
   services.logind.lidSwitch = "suspend-then-hibernate";
@@ -358,7 +384,7 @@ in
   services.udev.enable = true;
   services.power-profiles-daemon.enable = true;
   services.blueman.enable = true;
-  services.xserver.displayManager.lightdm.enable = false;
+  services.xserver.displayManager.lightdm.enable = true;
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
